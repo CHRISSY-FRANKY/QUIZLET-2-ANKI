@@ -1,4 +1,4 @@
-# QUIZLET-CLONER
+# QUIZLET CLONER
 
 A simple tool to clone a Quizlet deck provided the link to the deck, extracting terms and definitions for use on better platforms like Anki.
 
