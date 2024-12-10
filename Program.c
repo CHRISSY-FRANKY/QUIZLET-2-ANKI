@@ -79,9 +79,16 @@ char* getFormattedContent(char *unFormattedContent) // Format the loaded text fo
     return formattedContent;
 }
 
-char *generateFormattedTextDirectoryFile(char **formattedText)
+void createFormattedContentTextFile(char *formattedText)
 {
-    return NULL;
+    FILE *file = fopen("formattedContent.txt", "w"); // open a new file 
+    fputs(formattedText, file); // Write the string to the file
+      if (fputs(formattedText, file) == EOF) {
+        perror("Error writing to file");
+    } else {
+        printf("Text has been written to formattedContent.txt\n");
+    }
+    fclose(file); // close the file
 }
 
 int main(int nvar, char **vars)
@@ -94,10 +101,12 @@ int main(int nvar, char **vars)
     }
     else
     {
-        char *unFormattedContent = getContent(vars[1]);
-        char *formattedContent = getFormattedContent(unFormattedContent);
-        free(unFormattedContent);
+        char *rawContent = getContent(vars[1]); // Get the raw content
+        char *formattedContent = getFormattedContent(rawContent); // Formate the raw content for Anki to interpret
+        createFormattedContentTextFile(formattedContent); // Creates the file with the formattedContent
+        free(rawContent); // Free the allocated memory to avoid dangling pointer
         free(formattedContent);
+        printf("formattedContent.txt has been created! Now import it into Anki!");
     }
     return 0;
 }
