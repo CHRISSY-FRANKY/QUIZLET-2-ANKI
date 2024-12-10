@@ -7,12 +7,14 @@ typedef enum // Custom type to track repeats
 {
     none = 0,
     once = 1,
-    twice = 2
+    twice = 2,
+    thrice = 3,
+    quadrice = 4
 } Repeats;
 
-Repeats dleCtrlCounter = twice; // Data Link Escape Control Char Counter
+Repeats carriageReturnRepeat = none; // Data Link Escape Control Char Counter
 
-char *getUnFormattedContent(char *filename) // Load the manually scraped text onto the system
+char *getContent(char *filename) // Load the manually scraped text onto the system
 {
     FILE *file = fopen(filename, "rb"); // Open the file
     if (file == NULL)                   // Opening file failed
@@ -32,7 +34,7 @@ char *getUnFormattedContent(char *filename) // Load the manually scraped text on
     size_t read_size = fread(unFormattedContent, 1, size, file); // Read file contents
     if (read_size != size)                                       // Reading file failed
     {
-        fprintf(stderr, "Reading file FAILED!"); 
+        fprintf(stderr, "Reading file FAILED!");
         free(unFormattedContent); // No leaks
         fclose(file);
         return NULL;
@@ -42,57 +44,39 @@ char *getUnFormattedContent(char *filename) // Load the manually scraped text on
     return unFormattedContent;
 }
 
-char *createFormattedText(char *unFormattedContent) // Format the loaded text for quizlet/anki to interpret it correctly
+char* getFormattedContent(char *unFormattedContent) // Format the loaded text for anki to interpret it correctly
 {
-    unsigned long long int contentLength = strlen(unFormattedContent);
-    char *text = (char *)(malloc(sizeof(char) * (1024 + contentLength))); // Allocate memory for text
-    char *textPtr = text;                               // Create pointer for text
+    unsigned long long int contentLength = strlen(unFormattedContent); // get the length of the content
+    char* formattedContent = (char*)malloc(sizeof(char) * contentLength); // allocate memory for the formmated content string
+    char* temp = formattedContent;
     while (*unFormattedContent != '\0') // Iterate through manually scraped text
     {
-        char ch = *unFormattedContent; // Save current char
+        char ch = *unFormattedContent;               // Save current char
         if (ispunct(ch) || isalnum(ch) || ch == ' ') // Is punctuation or alpha numeric or space, save char
         {
-            *text++ = ch;
-            *text = '\0';
+            if (carriageReturnRepeat == twice && *(unFormattedContent + 1) != '\n')
+            {
+                carriageReturnRepeat = once;
+                *temp++ = '<';
+                *temp++ = 'b';
+                *temp++ = 'r';
+                *temp++ = '>';
+            }
+            *temp++ = *unFormattedContent;
         }
-        else if (ch == '\r') // Is carriage return
+        else if (ch == '\n' && carriageReturnRepeat++ < 1) // Is carriage return
         {
-            if ((int)*textPtr == 16) // Is Data Link Escape Control Char, track repeats
-            {
-                if (dleCtrlCounter == none)
-                {
-                    dleCtrlCounter = once;
-                }
-                else if (dleCtrlCounter == once)
-                {
-                    dleCtrlCounter = twice;
-                }
-            }
-            else
-            {
-                if (dleCtrlCounter == twice) // DLE Char repeats twice right before term
-                {
-                    printf("Term: ");
-                }
-                else // Otherwise it's the definition
-                {
-                    printf("Definition: ");
-                }
-                dleCtrlCounter = none; // Reset DLE Char repats
-                int length = 0;
-                for (; *textPtr != '\0'; printf("%c", *textPtr++), length++) // Print text
-                    ;
-                for (; length > 0; length--, *textPtr--) // Reset pointer to properly free memory
-                    ;
-                free(textPtr); // Free memory of text
-                text = malloc(sizeof(char) * 1024); // Allocate memory for text once again
-                textPtr = text; // Point to text start
-                printf("\n");
-            }
+            *temp++ = ';';
+        }
+        else if (carriageReturnRepeat > 3)
+        {
+            *temp++ = '\n';
+            carriageReturnRepeat = none;
         }
         *unFormattedContent++; // Move on to next character
     }
-    return NULL;
+    *temp = '\0';
+    return formattedContent;
 }
 
 char *generateFormattedTextDirectoryFile(char **formattedText)
@@ -110,9 +94,10 @@ int main(int nvar, char **vars)
     }
     else
     {
-        char *unFormattedContent = getUnFormattedContent(vars[1]);
-        char *formattedContent = createFormattedText(unFormattedContent);
+        char *unFormattedContent = getContent(vars[1]);
+        char *formattedContent = getFormattedContent(unFormattedContent);
         free(unFormattedContent);
+        free(formattedContent);
     }
     return 0;
 }
