@@ -14,4 +14,5 @@ This project is released under the MIT License.
 - create basic static website the will be served
 - create basic server that will serve the user
 - create basic website scraper provided a link
+- create basic program to format the formatted contents into an anki deck file
 
