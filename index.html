@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quizlet2Anki</title>
+        <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.min.js"></script>
+    </head>
+    <body>
+        <h1>Welcome to Quizlet2Anki!</h1>
+        <h2>Designed by Chrissy Franky</h2>
+        <form hx-post="\submit" hx-swap="outerHTML">
+            <input type="text" name="query" placeholder="Enter the Quizlet deck URL!">
+            <button type="Submit">2 Anki</button>
+        </form>
+    </body>
+</html>
