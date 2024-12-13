@@ -11,6 +11,7 @@ This project is released under the MIT License.
 
 # TO DO
 
-- automate the scraping stage by simply providing the link
-- provide a frontend to improve ease of use
+- create basic static website the will be served
+- create basic server that will serve the user
+- create basic website scraper provided a link
 
