@@ -59,6 +59,10 @@ char *getFormattedContent(char *unFormattedContent) // Format the loaded text fo
         char ch = *unFormattedContent;               // Save current char
         if (ispunct(ch) || isalnum(ch) || ch == ' ') // Is punctuation or alpha numeric or space, save char
         {
+            if (ch == ';') // Replace ; with , to avoid interference
+            {
+                ch = ',';
+            }
             if (carriageReturnRepeat == twice && *(unFormattedContent + 1) != '\n')
             {
                 carriageReturnRepeat = once;
