@@ -12,7 +12,7 @@ typedef enum // Custom type to track repeats
     quadrice = 4
 } Repeats;
 
-Repeats carriageReturnRepeat = none; // Data Link Escape Control Char Counter
+Repeats carriageReturnRepeat = none; // Carriage Return Counter
 
 char *getContent(char *filename) // Load the manually scraped text onto the system
 {
@@ -44,11 +44,16 @@ char *getContent(char *filename) // Load the manually scraped text onto the syst
     return unFormattedContent;
 }
 
-char* getFormattedContent(char *unFormattedContent) // Format the loaded text for anki to interpret it correctly
+char *getFormattedContent(char *unFormattedContent) // Format the loaded text for anki to interpret it correctly
 {
-    unsigned long long int contentLength = strlen(unFormattedContent); // get the length of the content
-    char* formattedContent = (char*)malloc(sizeof(char) * contentLength); // allocate memory for the formmated content string
-    char* temp = formattedContent;
+    unsigned long long int contentLength = strlen(unFormattedContent) * 1.1;     // get the length of the content and add some trailing space
+    char *formattedContent = (char *)malloc(sizeof(char) * contentLength); // allocate memory for the formmated content string
+    if (formattedContent == NULL)                                          // Memory allocation failed
+    {
+        fprintf(stderr, "Allocating memory FAILED!");
+        return NULL;
+    }
+    char *temp = formattedContent;
     while (*unFormattedContent != '\0') // Iterate through manually scraped text
     {
         char ch = *unFormattedContent;               // Save current char
@@ -81,11 +86,14 @@ char* getFormattedContent(char *unFormattedContent) // Format the loaded text fo
 
 void createFormattedContentTextFile(char *formattedText)
 {
-    FILE *file = fopen("formattedContent.txt", "w"); // open a new file 
-    fputs(formattedText, file); // Write the string to the file
-      if (fputs(formattedText, file) == EOF) {
+    FILE *file = fopen("formattedContent.txt", "w"); // open a new file
+    fputs(formattedText, file);                      // Write the string to the file
+    if (fputs(formattedText, file) == EOF)
+    {
         perror("Error writing to file");
-    } else {
+    }
+    else
+    {
         printf("Text has been written to formattedContent.txt\n");
     }
     fclose(file); // close the file
@@ -101,10 +109,10 @@ int main(int nvar, char **vars)
     }
     else
     {
-        char *rawContent = getContent(vars[1]); // Get the raw content
+        char *rawContent = getContent(vars[1]);                   // Get the raw content
         char *formattedContent = getFormattedContent(rawContent); // Formate the raw content for Anki to interpret
-        createFormattedContentTextFile(formattedContent); // Creates the file with the formattedContent
-        free(rawContent); // Free the allocated memory to avoid dangling pointer
+        createFormattedContentTextFile(formattedContent);         // Creates the file with the formattedContent
+        free(rawContent);                                         // Free the allocated memory to avoid dangling pointer
         free(formattedContent);
         printf("formattedContent.txt has been created! Now import it into Anki!");
     }
