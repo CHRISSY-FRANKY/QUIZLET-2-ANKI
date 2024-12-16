@@ -5,7 +5,7 @@
 
 #define PORT 8080
 
-struct MHD_PostProcessor *postProcessorP = NULL;
+struct MHD_PostProcessor *submitLinkPOSTProcessor = NULL;
 
 char *readFileContent(char *fileName);
 static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
@@ -87,18 +87,18 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
     {
         if (*ptr == NULL) // A post hasn't been received
         {
-            postProcessorP = MHD_create_post_processor(connection, 1024, (MHD_PostDataIterator)processPOSTsubmitLink, NULL); // Setup the post processor
-            *ptr = postProcessorP;                                                                                  // Point to the location of the post processor
+            submitLinkPOSTProcessor = MHD_create_post_processor(connection, 1024, (MHD_PostDataIterator)processPOSTsubmitLink, NULL); // Setup the post processor
+            *ptr = submitLinkPOSTProcessor;                                                                                  // Point to the location of the post processor
             return MHD_YES;                                                                                         // Yes we're expecting more data
         }
-        postProcessorP = (struct MHD_PostProcessor *)*ptr; // A POST has been received and we're converting the generic pointer back into the post processor
+        submitLinkPOSTProcessor = (struct MHD_PostProcessor *)*ptr; // A POST has been received and we're converting the generic pointer back into the post processor
         if (*upload_data_size > 0) // If data was actually sent, it will be processed
         {
-            MHD_post_process(postProcessorP, upload_data, *upload_data_size); // Process the data
+            MHD_post_process(submitLinkPOSTProcessor, upload_data, *upload_data_size); // Process the data
             *upload_data_size = 0; // We've finished processing the data
             return MHD_YES; // Wait for more data
         }
-        MHD_destroy_post_processor(postProcessorP); // We're done processing the data sent
+        MHD_destroy_post_processor(submitLinkPOSTProcessor); // We're done processing the data sent
         *ptr = NULL; // Reset the generic pointer that aided
         page = "^-^"; 
     }
