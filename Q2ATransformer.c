@@ -31,8 +31,8 @@ char *getContent(char *filename) // Load the manually scraped text onto the syst
         fprintf(stderr, "Allocating memory FAILED!");
         return NULL;
     }
-    size_t read_size = fread(unFormattedContent, 1, size, file); // Read file contents
-    if (read_size != size)                                       // Reading file failed
+    size_t fileSize = fread(unFormattedContent, 1, size, file); // Read file contents
+    if (fileSize != size)                                       // Reading file failed
     {
         fprintf(stderr, "Reading file FAILED!");
         free(unFormattedContent); // No leaks
