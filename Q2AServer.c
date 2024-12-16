@@ -20,7 +20,7 @@ static int indexResponse(void *cls, struct MHD_Connection *connection, const cha
         printf("INVALID REQUEST METHOD!\n");
         return MHD_NO;
     }
-    const char *page = "Welcome to Quizlet 2 Anki! Designed by Chriss Franky!"; // Building the response body
+    const char *page = "Welcome to Quizlet 2 Anki! Designed by Chrisy Franky!"; // Building the response body
     struct MHD_Response *response;
     int result;
     response = MHD_create_response_from_buffer(strlen(page), (void *)page, MHD_RESPMEM_PERSISTENT); // Build the actual response
@@ -29,25 +29,19 @@ static int indexResponse(void *cls, struct MHD_Connection *connection, const cha
     printf("RESPONSE SENT\n");
     return result; // Return the conclusion to the queued response
 }
+
 int main(void)
 {
     printf("STARTING SERVER!!!\n");
-    fflush(stdout);
     struct MHD_Daemon *daemon;
-
-    // Start the HTTP daemon
-    daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL, (MHD_AccessHandlerCallback)&indexResponse, NULL, MHD_OPTION_END);
-
+    daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL, (MHD_AccessHandlerCallback)&indexResponse, NULL, MHD_OPTION_END);     // Start the HTTP daemon
     if (NULL == daemon) // Daemon failed to start (reminds me of the Vampire Diaries)
     {
         fprintf(stderr, "FAILED TO START DAEMON!\n");
         return 1;
     }
-
     printf("SERVER RUNNING ON PORT %d! PRESS ENTER TO QUIT!\n", PORT);
-
     getchar();               // Keep the server alive until user presses ENTER
     MHD_stop_daemon(daemon); // Stop the server when done
-
     return 0;
 }
