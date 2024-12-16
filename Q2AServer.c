@@ -65,14 +65,20 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
         return MHD_YES; // Continue processing the request
     }
     printf("RECEIVED REQUEST FOR %s USING %s!\n", url, method);
-    if (0 != strcmp(method, "GET")) // Ensuring a GET request is received
+    if (0 != strcmp(method, "GET") && 0 != strcmp(method, "POST")) // Ensuring a GET or a POST request is received
     {
         printf("INVALID REQUEST METHOD!\n");
         return MHD_NO;
     }
     char *page = NULL;
-    if (strcmp(url, "/") == 0) // Generating response body for /
+    if (strcmp(url, "/") == 0 && strcmp(method, "GET") == 0) // Generating response body for / Get request
     {
+        page = readFileContent("index.html");
+    }
+    else if (strcmp(url, "/submitLink") == 0 && strcmp(method, "POST") == 0)
+    {
+
+        printf(upload_data);
         page = readFileContent("index.html");
     }
     else // Generating response body for ...
