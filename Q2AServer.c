@@ -13,13 +13,13 @@ int main(void)
     printf("STARTING SERVER!!!\n");
     struct MHD_Daemon *daemon;
     daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL, (MHD_AccessHandlerCallback)&requestHandler, NULL, MHD_OPTION_END); // Start the HTTP daemon
-    if (NULL == daemon)                                                                                                                          // Daemon failed to start (reminds me of the Vampire Diaries)
+    if (NULL == daemon)                                                                                                                           // Daemon failed to start (reminds me of the Vampire Diaries)
     {
         fprintf(stderr, "FAILED TO START DAEMON!\n");
         return 1;
     }
     printf("SERVER RUNNING ON PORT %d! PRESS ENTER TO QUIT!\n", PORT);
-    getchar();               // Keep the server alive until user presses ENTER
+    getchar();               // Keep the server alive until user presses anything really
     MHD_stop_daemon(daemon); // Stop the server when done
     return 0;
 }
@@ -70,16 +70,24 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
         printf("INVALID REQUEST METHOD!\n");
         return MHD_NO;
     }
-    const char *page = readFileContent("index.html"); // Building the response body
-    if (page == NULL)                                 // Reading file content failed
+    char *page = NULL;
+    if (strcmp(url, "/") == 0) // Generating response body for /
+    {
+        page = readFileContent("index.html");
+    }
+    else // Generating response body for ...
+    {
+        page = "^-^"; // Acting all kawaii and ditzy
+    }
+    if (page == NULL) // Reading file content failed
     {
         fprintf(stderr, "FAILED TO READ index.html!");
-        page = "Welcome to Quizlet 2 Anki! Designed by Chrisy Franky!<br>Oops! There was a problem fetching this page!";
+        page = "Welcome to Quizlet 2 Anki! Designed by Chrissy Franky!<br>Oops! There was a problem fetching this page!";
     }
     struct MHD_Response *response;
     int result;
     response = MHD_create_response_from_buffer(strlen(page), (void *)page, MHD_RESPMEM_PERSISTENT); // Build the actual response
-    result = MHD_queue_response(connection, MHD_HTTP_OK, response);                                 // Create the status indicator
+    result = MHD_queue_response(connection, MHD_HTTP_OK, response);                                 // Create the status indicator/result
     MHD_destroy_response(response);                                                                 // Destroy response since its already been queued
     printf("RESPONSE SENT\n");
     return result; // Return the conclusion to the queued response
