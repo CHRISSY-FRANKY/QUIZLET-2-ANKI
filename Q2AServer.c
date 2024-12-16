@@ -6,13 +6,13 @@
 #define PORT 8080
 
 char *readFileContent(char *fileName);
-static int indexResponse(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
+static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
 
 int main(void)
 {
     printf("STARTING SERVER!!!\n");
     struct MHD_Daemon *daemon;
-    daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL, (MHD_AccessHandlerCallback)&indexResponse, NULL, MHD_OPTION_END); // Start the HTTP daemon
+    daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION, PORT, NULL, NULL, (MHD_AccessHandlerCallback)&requestHandler, NULL, MHD_OPTION_END); // Start the HTTP daemon
     if (NULL == daemon)                                                                                                                          // Daemon failed to start (reminds me of the Vampire Diaries)
     {
         fprintf(stderr, "FAILED TO START DAEMON!\n");
@@ -55,7 +55,7 @@ char *readFileContent(char *fileName)
     return fileContent;
 }
 
-static int indexResponse(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
+static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
 {
     static bool initialConnectionEstablished = false;
     if (!initialConnectionEstablished) // Only establishes the initial connection once
