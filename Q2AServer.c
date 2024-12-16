@@ -18,7 +18,13 @@ static int indexResponse(void *cls, struct MHD_Connection *connection, const cha
         return MHD_NO;
     }
 
-    return 0;
+    const char *page = "Welcome to Quizlet 2 Anki! Designed by Chriss Franky!"; // Building the response body
+    struct MHD_Response *response;
+    int ret;
+    response = MHD_create_response_from_buffer(strlen(page), (void *)page, MHD_RESPMEM_PERSISTENT); // Build the actual response
+    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);                                    // Create the status indicator
+    MHD_destroy_response(response);                                                                 // Destroy response since its already been queue
+    return ret;                                                                                     // Return the conclusion to the queued response
 }
 
 int main(void)
