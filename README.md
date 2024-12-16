@@ -4,15 +4,19 @@ A simple tool to clone a Quizlet deck provided the link to the deck, extracting 
 
 ## Features
 
-- Formats the raw data into a formatted text that is saved in a seperate file 
-
+- Features a C program that is compiled to create an executable when run formats the raw data into a formatted text that is saved in a seperate file 
+- Features a C program that is compiled to create an executable when run creates a server that only has one response which is a special message
+- Features a single HTML file that will eventually be served when a / request is made by the server mentioned above
+  
 ## License
+
 This project is released under the MIT License.
 
 # TO DO
 
-- create basic static website the will be served
-- create basic server that will serve the user
-- create basic website scraper provided a link
-- create basic program to format the formatted contents into an anki deck file
+- serve the basic static website
+- validate the link provided by the user to not get caught up
+- have the server scrape the contents of the loaded page via the link entered
+- have the server return the scraped processed content as a downloaded file
+
 
