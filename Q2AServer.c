@@ -5,6 +5,8 @@
 
 #define PORT 8080
 
+struct MHD_PostProcessor *postProcessorP = NULL;
+
 char *readFileContent(char *fileName);
 static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
 
@@ -55,6 +57,12 @@ char *readFileContent(char *fileName)
     return fileContent;
 }
 
+static int processPOSTsubmitLink(void *coninfo_cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type, const char *transfer_encoding, const char *data, uint64_t off, size_t size)
+{
+    printf("%.*s\n", (int)size, data);
+    return MHD_YES;
+}
+
 static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
 {
     static bool initialConnectionEstablished = false;
@@ -71,15 +79,28 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
         return MHD_NO;
     }
     char *page = NULL;
-    if (strcmp(url, "/") == 0 && strcmp(method, "GET") == 0) // Generating response body for / Get request
+    if (strcmp(url, "/") == 0 && strcmp(method, "GET") == 0) // Generating response body for / GET request
     {
         page = readFileContent("index.html");
     }
-    else if (strcmp(url, "/submitLink") == 0 && strcmp(method, "POST") == 0)
+    else if (strcmp(url, "/submitLink") == 0 && strcmp(method, "POST") == 0) // Generating response body for /submitLink POST request
     {
-
-        printf(upload_data);
-        page = readFileContent("index.html");
+        if (*ptr == NULL) // A post hasn't been received
+        {
+            postProcessorP = MHD_create_post_processor(connection, 1024, (MHD_PostDataIterator)processPOSTsubmitLink, NULL); // Setup the post processor
+            *ptr = postProcessorP;                                                                                  // Point to the location of the post processor
+            return MHD_YES;                                                                                         // Yes we're expecting more data
+        }
+        postProcessorP = (struct MHD_PostProcessor *)*ptr; // A POST has been received and we're converting the generic pointer back into the post processor
+        if (*upload_data_size > 0) // If data was actually sent, it will be processed
+        {
+            MHD_post_process(postProcessorP, upload_data, *upload_data_size); // Process the data
+            *upload_data_size = 0; // We've finished processing the data
+            return MHD_YES; // Wait for more data
+        }
+        MHD_destroy_post_processor(postProcessorP); // We're done processing the data sent
+        *ptr = NULL; // Reset the generic pointer that aided
+        page = "^-^"; 
     }
     else // Generating response body for ...
     {
