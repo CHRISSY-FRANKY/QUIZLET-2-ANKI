@@ -9,8 +9,13 @@ static int indexResponse(void *cls, struct MHD_Connection *connection, const cha
     static int initialConnectionCall;
     if (initialConnectionCall != *connection_closure) // Check if this is the initial connection call / headers only
     {
-        *connection_closure = initialConnectionCall;
+        *connection_closure = &initialConnectionCall;
         return MHD_YES;
+    }
+
+    if (0 != strcmp(method, "GET")) // Ensuring a GET request is received
+    {
+        return MHD_NO;
     }
 
     return 0;
