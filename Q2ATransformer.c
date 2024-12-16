@@ -46,9 +46,9 @@ char *getContent(char *filename) // Load the manually scraped text onto the syst
 
 char *getFormattedContent(char *unFormattedContent) // Format the loaded text for anki to interpret it correctly
 {
-    unsigned long long int contentLength = strlen(unFormattedContent) * 1.1;     // get the length of the content and add some trailing space
-    char *formattedContent = (char *)malloc(sizeof(char) * contentLength); // allocate memory for the formmated content string
-    if (formattedContent == NULL)                                          // Memory allocation failed
+    unsigned long long int contentLength = strlen(unFormattedContent) * 1.1; // get the length of the content and add some trailing space
+    char *formattedContent = (char *)malloc(sizeof(char) * contentLength);   // allocate memory for the formmated content string
+    if (formattedContent == NULL)                                            // Memory allocation failed
     {
         fprintf(stderr, "Allocating memory FAILED!");
         return NULL;
@@ -75,7 +75,17 @@ char *getFormattedContent(char *unFormattedContent) // Format the loaded text fo
         }
         else if (ch == '\n' && carriageReturnRepeat++ < 1) // Is carriage return
         {
-            *temp++ = ';';
+            if (*(temp - 1) != ';' && *(temp - 1) != '\n') // Avoid duplicates and false starts
+            {
+                *temp++ = ';';
+            }
+            else
+            {
+                *temp++ = '<';
+                *temp++ = 'b';
+                *temp++ = 'r';
+                *temp++ = '>';
+            }
         }
         else if (carriageReturnRepeat > 3)
         {
