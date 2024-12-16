@@ -20,14 +20,24 @@ static int indexResponse(void *cls, struct MHD_Connection *connection, const cha
 
     const char *page = "Welcome to Quizlet 2 Anki! Designed by Chriss Franky!"; // Building the response body
     struct MHD_Response *response;
-    int ret;
+    int result;
     response = MHD_create_response_from_buffer(strlen(page), (void *)page, MHD_RESPMEM_PERSISTENT); // Build the actual response
-    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);                                    // Create the status indicator
+    result = MHD_queue_response(connection, MHD_HTTP_OK, response);                                    // Create the status indicator
     MHD_destroy_response(response);                                                                 // Destroy response since its already been queue
-    return ret;                                                                                     // Return the conclusion to the queued response
+    return result;                                                                                     // Return the conclusion to the queued response
 }
 
 int main(void)
 {
-    printf("Hello, World!\n");
+    struct MHD_Daemon *daemon;
+    daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL, &indexResponse, NULL, MHD_OPTION_END); // Start the Daemon (lowkey reminded me of the Vampire Diaries
+    if (NULL == daemon) // Catch a dud daemon
+    {
+        fprintf(stderr, "FAILED TO START DAEMON!");
+        return 1;
+    }
+    printf("SERVER RUNNING ON PORT %d! PRESS ENTER TO QUIT!\n", PORT); // Keep the server running until the user presses enter
+    getchar();
+    MHD_stop_daemon(daemon); // Kill it
+    
 }
