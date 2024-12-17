@@ -92,12 +92,12 @@ static int processPOSTsubmitLink(void *coninfo_cls, enum MHD_ValueKind kind, con
     if (submitLinkIsValid(data))
     {
         *flag = 1;
-        printf("THE LINK PROVIDED IS VALID!");
+        printf("THE LINK PROVIDED IS VALID!\n");
     }
     else
     {
         *flag = 0;
-        printf("THE LINK PROVIDED IS INVALID!");
+        printf("THE LINK PROVIDED IS INVALID!\n");
     }
     return MHD_YES;
 }
@@ -141,11 +141,11 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
         *ptr = NULL;                                         // Reset the generic pointer that aided
         if (submitLinkPOSTProcessorFlag)
         {
-            page = "VALID";
+            page = readFileContent("index-valid-link.html");
         }
         else
         {
-            page = "INVALID";
+            page = readFileContent("index-invalid-link.html");
         }
     }
     else // Generating response body for ...
