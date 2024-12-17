@@ -6,6 +6,7 @@
 #define PORT 8080
 
 struct MHD_PostProcessor *submitLinkPOSTProcessor = NULL;
+int submitLinkPOSTProcessorFlag = 0;
 
 char *readFileContent(char *fileName);
 static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
@@ -63,9 +64,9 @@ bool submitLinkIsValid(const char *link)
     const char *validDomain = "https://quizlet.com\0";
     while (*link == *validDomain) // Process the validation of the domain
     {
-        *link++; 
+        *link++;
         *validDomain++;
-    } 
+    }
     if (*link++ != '/') // Domain is invalid
     {
         return false;
@@ -74,21 +75,30 @@ bool submitLinkIsValid(const char *link)
     while (isdigit(*link)) // Process the validation of the unique ID
     {
         *link++;
-    }; 
+    };
     if (*link++ != '/') // Unique ID is invalid
     {
         return false;
     }
     printf("THE ID IS VALID!");
-    for (;*link == '-' || isalnum(*link);link++); // Process the validation of the deck title
+    for (; *link == '-' || isalnum(*link); link++)
+        ; // Process the validation of the deck title
     return *link++ == '/';
 }
 
 static int processPOSTsubmitLink(void *coninfo_cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type, const char *transfer_encoding, const char *data, uint64_t off, size_t size)
 {
-    // Verify the data is an actual link for protection
-    bool isLinkValid = submitLinkIsValid(data);
-    printf("%.*s %d\n", (int)size, data, isLinkValid);
+    bool *flag = (bool *)coninfo_cls;
+    if (submitLinkIsValid(data))
+    {
+        *flag = 1;
+        printf("THE LINK PROVIDED IS VALID!");
+    }
+    else
+    {
+        *flag = 0;
+        printf("THE LINK PROVIDED IS INVALID!");
+    }
     return MHD_YES;
 }
 
@@ -116,20 +126,27 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
     {
         if (*ptr == NULL) // A post hasn't been received
         {
-            submitLinkPOSTProcessor = MHD_create_post_processor(connection, 1024, (MHD_PostDataIterator)processPOSTsubmitLink, NULL); // Setup the post processor
-            *ptr = submitLinkPOSTProcessor;                                                                                  // Point to the location of the post processor
-            return MHD_YES;                                                                                         // Yes we're expecting more data
+            submitLinkPOSTProcessor = MHD_create_post_processor(connection, 1024, (MHD_PostDataIterator)processPOSTsubmitLink, &submitLinkPOSTProcessorFlag); // Setup the post processor
+            *ptr = submitLinkPOSTProcessor;                                                                                                                  // Point to the location of the post processor
+            return MHD_YES;                                                                                                                                  // Yes we're expecting more data
         }
         submitLinkPOSTProcessor = (struct MHD_PostProcessor *)*ptr; // A POST has been received and we're converting the generic pointer back into the post processor
-        if (*upload_data_size > 0) // If data was actually sent, it will be processed
+        if (*upload_data_size > 0)                                  // If data was actually sent, it will be processed
         {
             MHD_post_process(submitLinkPOSTProcessor, upload_data, *upload_data_size); // Process the data
-            *upload_data_size = 0; // We've finished processing the data
-            return MHD_YES; // Wait for more data
+            *upload_data_size = 0;                                                     // We've finished processing the data
+            return MHD_YES;                                                            // Wait for more data
         }
         MHD_destroy_post_processor(submitLinkPOSTProcessor); // We're done processing the data sent
-        *ptr = NULL; // Reset the generic pointer that aided
-        page = "^-^"; 
+        *ptr = NULL;                                         // Reset the generic pointer that aided
+        if (submitLinkPOSTProcessorFlag)
+        {
+            page = "VALID";
+        }
+        else
+        {
+            page = "INVALID";
+        }
     }
     else // Generating response body for ...
     {
