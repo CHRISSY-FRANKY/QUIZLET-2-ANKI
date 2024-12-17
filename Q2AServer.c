@@ -57,9 +57,38 @@ char *readFileContent(char *fileName)
     return fileContent;
 }
 
+bool submitLinkIsValid(const char *link)
+{
+    printf("PROCESSING LINK!\n");
+    const char *validDomain = "https://quizlet.com\0";
+    while (*link == *validDomain) // Process the validation of the domain
+    {
+        *link++; 
+        *validDomain++;
+    } 
+    if (*link++ != '/') // Domain is invalid
+    {
+        return false;
+    }
+    printf("THE DOMAIN IS VALID!\n");
+    while (isdigit(*link)) // Process the validation of the unique ID
+    {
+        *link++;
+    }; 
+    if (*link++ != '/') // Unique ID is invalid
+    {
+        return false;
+    }
+    printf("THE ID IS VALID!");
+    for (;*link == '-' || isalnum(*link);link++); // Process the validation of the deck title
+    return *link++ == '/';
+}
+
 static int processPOSTsubmitLink(void *coninfo_cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type, const char *transfer_encoding, const char *data, uint64_t off, size_t size)
 {
-    printf("%.*s\n", (int)size, data);
+    // Verify the data is an actual link for protection
+    bool isLinkValid = submitLinkIsValid(data);
+    printf("%.*s %d\n", (int)size, data, isLinkValid);
     return MHD_YES;
 }
 
