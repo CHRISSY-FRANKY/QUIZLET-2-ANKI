@@ -18,3 +18,5 @@ This project is released under the MIT License.
 - add a button for the user to return to the main page after the link is validated
 - have the server scrape the contents of the loaded page via the link entered
 - have the server return the scraped processed content as a downloadable text file
+- increase the runtime efficiency of Q2AServer.c by implementing a trie to handle the routes
+- increase the memory efficiency of Q2ATransformer.c by reading and processing the contents at once line by line
