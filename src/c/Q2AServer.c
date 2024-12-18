@@ -8,6 +8,10 @@
 struct MHD_PostProcessor *submitLinkPOSTProcessor = NULL;
 int submitLinkPOSTProcessorFlag = 0;
 
+char* indexHTMLFileAddress = "src\\html\\index.html";
+char* indexValidLinkHTMLFileAddress = "src\\html\\index-valid-link.html";
+char* indexInvalidLinkHTMLFileAddress = "src\\html\\index-invalid-link.html";
+
 char *readFileContent(char *fileName);
 static int requestHandler(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr);
 
@@ -120,7 +124,7 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
     char *page = NULL;
     if (strcmp(url, "/") == 0 && strcmp(method, "GET") == 0) // Generating response body for / GET request
     {
-        page = readFileContent("index.html");
+        page = readFileContent(indexHTMLFileAddress);
     }
     else if (strcmp(url, "/submitLink") == 0 && strcmp(method, "POST") == 0) // Generating response body for /submitLink POST request
     {
@@ -141,11 +145,11 @@ static int requestHandler(void *cls, struct MHD_Connection *connection, const ch
         *ptr = NULL;                                         // Reset the generic pointer that aided
         if (submitLinkPOSTProcessorFlag)
         {
-            page = readFileContent("index-valid-link.html");
+            page = readFileContent(indexValidLinkHTMLFileAddress);
         }
         else
         {
-            page = readFileContent("index-invalid-link.html");
+            page = readFileContent(indexInvalidLinkHTMLFileAddress);
         }
     }
     else // Generating response body for ...
