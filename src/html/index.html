@@ -3,11 +3,18 @@
     <head>
         <title>Quizlet2Anki</title>
         <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.min.js"></script>
+        <style>
+            html
+            {
+                color: white;
+                background-color: black;
+            }
+        </style>
     </head>
     <body>
         <h1>Welcome to Quizlet2Anki!</h1>
         <h2>Designed by Chrissy Franky</h2>
-        <p><i>If you don't provide a link to a quizlet deck, due to your incompetency, you'll be asked to try again!</i></p>
+        <p><i>If you don't provide a link to a quizlet deck, due to your incompetency, you'll be prompted to try again!</i></p>
         <form hx-post="/submitLink" hx-swap="outerHTML">
             <input type="text" name="query" placeholder="Quizlet deck URL!">
             <button type="Submit">2 Anki</button>
