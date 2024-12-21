@@ -15,8 +15,9 @@ This project is released under the MIT License.
 
 # TO DO
 
-- add a button for the user to return to the main page after the link is validated
-- have the server scrape the contents of the loaded page via the link entered
-- have the server return the scraped processed content as a downloadable text file
-- increase the runtime efficiency of Q2AServer.c by implementing a trie to handle the routes
-- increase the memory efficiency of Q2ATransformer.c by reading and processing the contents at once line by line
+- CREATE a loading animation for scraping and transforming quizlet contents
+- CREATE a cancel button for the user to return to the main page after the link is validated
+- UPDATE the server to scrape the contents of the loaded page via the link entered
+- UPDATE the server to return the scraped processed content as a downloadable text file
+- UPDATE Q2AServer.c increase the runtime efficiency of  by implementing a trie to handle the routes
+- UPDATE Q2ATransformer.c increase the memory efficiency of by reading and processing the contents at once line by line
