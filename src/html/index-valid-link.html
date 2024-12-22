@@ -1,1 +1,50 @@
-<p>You've provided a valid link! The contents of the page will be scraped and processed in a bit!</p>
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <style>
+        #loading {
+            position: absolute;
+            height: 1vw;
+            width: 1vw;
+            font-weight: bolder;
+            font-size: 2vw;
+            display: inline-flex;
+            margin-top: -0.5vw;
+        }
+    </style>
+    <label id="message">Scraping Raw Data!&nbsp</label>
+    <label id="loading"></label>
+    <script>
+        let loadingLabel = document.getElementById("loading"); // Get the label
+        let largeDot = '●'; // Save the dots
+        let smallDot = '•';
+        var dotArr = []; // Create the array where the dots will be stored
+        dotArr.push(largeDot); // Add the large dot
+        for (var i = 0; i < 9; i++) { // Add the rest of the small dots
+            dotArr.push(smallDot);
+        }
+
+        var largeDotIndex = 0; // Keep track of position and direction
+        var directionPositive = true;
+        function loadingAnimation() { 
+            loadingLabel.innerHTML = dotArr.join(''); // Join the dots into a single string to set
+            dotArr[largeDotIndex] = smallDot; // clear the large dot
+            if (directionPositive) { // Move the large dot based on the direction
+                largeDotIndex += 1;
+            }
+            else {
+                largeDotIndex -= 1;
+            }
+            if (largeDotIndex == 9) { // If the index reaches a bound switch direction
+                directionPositive = !directionPositive;
+            } else if (largeDotIndex == 0)
+            {
+                directionPositive = !directionPositive;
+            }
+            dotArr[largeDotIndex] = largeDot; // Set large dot to new location
+            setTimeout(loadingAnimation, 250);
+        }
+        loadingAnimation();
+    </script>
+</body>
+</html>
