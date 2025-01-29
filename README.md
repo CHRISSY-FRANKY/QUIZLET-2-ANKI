@@ -1,3 +1,5 @@
+THE C BASED PROGRAM WILL BE EXECUTED BY A JAVA SPRINGBOOT APPLICATION
+
 # QUIZLET 2 ANKI
 
 A simple tool to clone a Quizlet deck provided the link to the deck, extracting terms and definitions for use on better platforms like Anki.
